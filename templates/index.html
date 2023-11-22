@@ -2,9 +2,41 @@
 <html>
 <head>
     <title>Video Stream</title>
+    <style>
+        #camera-feed {
+            width: 200px;   /* Adjust as needed */
+            height: auto;
+        }
+    </style>
+    <script type="text/javascript">
+        function startCamera() {
+            var feed = document.getElementById('camera-feed');
+            feed.style.display = 'block';
+            fetch('{{ url_for("start_camera") }}')  // Make an HTTP request to start the camera
+                .then(function(response) {
+                    if (response.ok) {
+                        feed.src = "{{ url_for('video_feed') }}";  // Load the video feed only if the camera started successfully
+                    } else {
+                        console.error('Failed to start the camera');
+                    }
+                })
+                .catch(function(error) {
+                    console.error('Error:', error);
+                });
+        }
+
+        function stopCamera() {
+            var feed = document.getElementById('camera-feed');
+            feed.style.display = 'none';
+            feed.src = '';
+            fetch('{{ url_for("stop_camera") }}');  // Signal the server to stop the camera
+        }
+    </script>
 </head>
 <body>
     <h1>Barcode Scanner Stream</h1>
-    <img src="{{ url_for('video_feed') }}" />
+    <button onclick="startCamera()">Start Camera</button>
+    <button onclick="stopCamera()">Stop Camera</button>
+    <img id="camera-feed"/>
 </body>
 </html>
